@@ -22,7 +22,7 @@ final class ArticleViewController: UIViewController {
     private let articleTableView: UITableView = {
         let tableView = UITableView()
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 200
+        tableView.estimatedRowHeight = 100
         return tableView
     }()
 
@@ -78,6 +78,7 @@ extension ArticleViewController: UITableViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let progress = scrollView.contentOffset.y / (scrollView.contentSize.height - scrollView.frame.height)
         progressBar.setProgress(Float(progress), animated: true)
+        print(scrollView.contentSize.height)
     }
 }
 
