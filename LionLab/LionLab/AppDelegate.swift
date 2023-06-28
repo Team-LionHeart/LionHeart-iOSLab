@@ -3,11 +3,14 @@ import UIKit
 // import
 import Firebase
 import FirebaseMessaging
+import KakaoSDKCommon
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate  {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+        KakaoSDK.initSDK(appKey: "41fe1b2427b435cc64f5875ed3de76ac")
 
         // Firebase 초기화 세팅.
         FirebaseApp.configure()
@@ -31,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate  {
 
     /// 현재 등록 토큰 가져오기.
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-
+        guard let fcmToken else { return }
         print("fcmToken: ", fcmToken)
     }
 

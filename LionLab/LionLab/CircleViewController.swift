@@ -7,12 +7,28 @@
 
 import UIKit
 
+import SnapKit
+
+import KakaoSDKAuth
+import KakaoSDKUser
+
 final class CircleViewController: UIViewController {
 
-    private let circleView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .black
-        return view
+    private let backgroundImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "backgroundImage")
+        imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
+
+    private let kakaoLoginButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("카카오로그인하기", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.backgroundColor = .yellow
+        button.layer.cornerRadius = 25
+        button.clipsToBounds = true
+        return button
     }()
 
     override func viewDidLoad() {
@@ -21,27 +37,42 @@ final class CircleViewController: UIViewController {
         setLayout()
     }
 
-    override func viewDidLayoutSubviews() {
-        circleView.layer.cornerRadius = circleView.frame.width / 2
+    private func setLayout() {
+
+        view.addSubview(backgroundImage)
+        backgroundImage.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        view.addSubview(kakaoLoginButton)
+        kakaoLoginButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().inset(80)
+            make.width.equalTo(300)
+            make.height.equalTo(50)
+        }
+
+        kakaoLoginButton.addTarget(self, action: #selector(kakaoLoginButtonTapped), for: .touchUpInside)
     }
 
-    private func setLayout() {
-        view.addSubview(circleView)
 
-        circleView.snp.makeConstraints { make in
-            make.size.equalTo(200)
-            make.center.equalToSuperview()
+    @objc func kakaoLoginButtonTapped() {
+        if UserApi.isKakaoTalkLoginAvailable() {
+            UserApi.shared.loginWithKakaoTalk { oAuthToken, error in
+                guard error == nil else { return }
+                print("loginWithKakaoSucces")
+                guard let oAuthToken = oAuthToken else { return }
+                print(oAuthToken.accessToken)
+            }
+        } else {
+            UserApi.shared.loginWithKakaoAccount { oAuthToken, error in
+                guard error == nil else { return }
+                print("loginWithNoKakaoSucces")
+                guard let oAuthToken = oAuthToken else { return }
+                print(oAuthToken.accessToken)
+                let nextVC = ArticleViewController()
+                self.navigationController?.pushViewController(nextVC, animated: true)
+            }
         }
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
